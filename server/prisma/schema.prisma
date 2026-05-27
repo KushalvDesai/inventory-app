@@ -4,10 +4,78 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum Role {
+  staff
+  owner
+  admin
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  role      Role     @default(staff)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Stock {
+  id                 String    @id @default(uuid())
+  inv                String?
+  invNo              String?
+  grade              String?
+  totalBags          Int?
+  bagWt              Float?
+  netWt              Float?
+  dop                DateTime?
+  broker             String?
+  buyer              String?
+  soldDate           DateTime?
+  soldRate           Float?
+  billNo             String?
+  biltyNo            String?
+  purchaseSample     String?
+  purchaseSampleDate DateTime?
+  timestamp          DateTime  @default(now()) @updatedAt
+  user               String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model StockMaster {
+  id                 String    @id @default(uuid())
+  inv                String?
+  invNo              String?
+  grade              String?
+  totalBags          Int?
+  bagWt              Float?
+  netWt              Float?
+  dop                DateTime?
+  broker             String?
+  buyer              String?
+  soldDate           DateTime?
+  soldRate           Float?
+  billNo             String?
+  biltyNo            String?
+  purchaseSample     String?
+  purchaseSampleDate DateTime?
+  timestamp          DateTime  @default(now()) @updatedAt
+  user               String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model UpdateOtp {
+  id        String   @id @default(uuid())
+  stockId   String
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
