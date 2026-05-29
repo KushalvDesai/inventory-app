@@ -304,17 +304,17 @@ export const useToasts = () => {
       mountContainer();
       toastStore.add(text, "message", preserve, action, onAction, onUndoAction);
     }, []),
-    success: useCallback((text: string) => {
+    success: useCallback((text: string | ReactNode) => {
       mountContainer();
       toastStore.add(text, "success");
     }, []),
-    warning: useCallback((text: string) => {
+    warning: useCallback((text: string | ReactNode) => {
       mountContainer();
       toastStore.add(text, "warning");
     }, []),
-    error: useCallback((text: string) => {
+    error: useCallback((text: string | ReactNode, preserve?: boolean) => {
       mountContainer();
-      toastStore.add(text, "error");
+      toastStore.add(text, "error", preserve);
     }, [])
   };
 };
