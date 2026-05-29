@@ -1,10 +1,36 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../prisma';
+import rateLimit from 'express-rate-limit';
+import fs from 'fs';
+import path from 'path';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
+
+const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5,
+  message: { message: 'Too many login attempts. Please try again after 1 hour.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const logAuthAttempt = (req: Request, res: Response, next: NextFunction) => {
+  const ip = req.ip || req.connection?.remoteAddress || 'unknown';
+  const logMessage = `${new Date().toISOString()} - Auth attempt from IP: ${ip} for path: ${req.path}\n`;
+  
+  const logFilePath = path.join(process.cwd(), 'auth.log');
+  fs.appendFile(logFilePath, logMessage, (err) => {
+    if (err) console.error('Failed to write to auth log:', err);
+  });
+  
+  next();
+};
+
+router.use(logAuthAttempt);
+router.use(authLimiter);
 
 router.post('/register', async (req: Request, res: Response): Promise<void> => {
   try {
